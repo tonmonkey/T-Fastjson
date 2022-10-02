@@ -6,4 +6,4 @@ python3 T-fastjson.py -h
 
 # tips
 + don't forget add args of dns_log
-+ you can access: http://www.dnslog.cn/ to get a dns log name
++ you can access: http://www.dnslog.cn/ to get a dns log domain name
